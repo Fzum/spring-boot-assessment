@@ -1,6 +1,8 @@
 package com.example.springbootassessment.task.web.controller;
 
+import com.example.springbootassessment.task.service.TaskService;
 import com.example.springbootassessment.task.web.dto.TaskDto;
+import com.example.springbootassessment.task.web.mapper.TaskMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -21,13 +23,25 @@ public class TaskController {
     that the right one is used by spring DI here!
      */
 
+    @Qualifier("taskDatabaseService")
+    private final TaskService taskService;
+    private final TaskMapper taskMapper;
+
     @GetMapping
     public ResponseEntity<List<TaskDto>> getAllTasks() {
-        throw new RuntimeException("todo: implement");
+        var tasks = taskService.findAll().stream()
+                .map(taskMapper::map)
+                .toList();
+
+        return ResponseEntity.ok(tasks);
     }
 
     @GetMapping("/{projectId}")
     public ResponseEntity<List<TaskDto>> getTasksByProjectId(@PathVariable Long projectId) {
-        throw new RuntimeException("todo: implement");
+        var tasks = taskService.findAllByProjectId(projectId).stream()
+                .map(taskMapper::map)
+                .toList();
+
+        return ResponseEntity.ok(tasks);
     }
 }
